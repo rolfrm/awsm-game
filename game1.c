@@ -16,7 +16,7 @@ void translate(float x, float y);
 
 void go(){
   print_str("starting 'game'\n");
-  float x = 0.0;
+  float x = 200.5;
   u64 tex = load_texture("../iron/duck.png");
   while(1){
 
@@ -32,7 +32,7 @@ void go(){
     blit_texture(sinf(-x * 0.01) * 0.5, 0, tex);
 
     swap_buffer();
-    x += 1;
+    //x += 1;
 
   }
 
