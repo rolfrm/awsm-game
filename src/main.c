@@ -58,6 +58,12 @@ static void _blit_scale(stack * stk){
   blit_scale(x, y);
 }
 
+static void _blit_translate(stack * stk){
+ f32 y = awsm_pop_f32(stk);
+ f32 x = awsm_pop_f32(stk);
+ blit_translate(x, y);
+}
+
 int main(int argc,const char * argv[]){
   UNUSED(argc);
   UNUSED(argv);
@@ -72,6 +78,7 @@ int main(int argc,const char * argv[]){
   awsm_register_function(mod, _load_texture, "load_texture");
   awsm_register_function(mod, _blit_texture, "blit_texture");
   awsm_register_function(mod, _blit_scale, "scale");
+  awsm_register_function(mod, _blit_translate, "translate");
   if(mod == NULL){
     printf("provide an executable...\n");
     return 1;
