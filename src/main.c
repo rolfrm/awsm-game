@@ -1,5 +1,6 @@
 #include <iron/full.h>
 #include <iron/gl.h>
+#include <microio.h>
 #include <awsm.h>
 
 static void * mem_clone(void * ptr, size_t s){
@@ -15,7 +16,6 @@ static void _swap_buffer(stack * _){
   UNUSED(_);
   gl_window_swap(win);
   gl_window_poll_events();
-  blit_begin(BLIT_MODE_UNIT);
 }
 
 static void _blit(stack * stk){
@@ -64,6 +64,19 @@ static void _blit_translate(stack * stk){
  blit_translate(x, y);
 }
 
+static void _key_down(stack * stk){
+  i32 k = awsm_pop_i32(stk);
+  bool v = gl_window_get_key_state(win, k);
+  //printf("Keydown %i %i %i\n", k, v, KEY_LEFT);
+  awsm_push_i32(stk, v);
+}
+
+static void _blit_init(stack * stk){
+  UNUSED(stk);
+  blit_begin(BLIT_MODE_UNIT);
+}
+
+
 int main(int argc,const char * argv[]){
   UNUSED(argc);
   UNUSED(argv);
@@ -79,6 +92,9 @@ int main(int argc,const char * argv[]){
   awsm_register_function(mod, _blit_texture, "blit_texture");
   awsm_register_function(mod, _blit_scale, "scale");
   awsm_register_function(mod, _blit_translate, "translate");
+  awsm_register_function(mod, _key_down, "key_down");
+  awsm_register_function(mod, _blit_init, "blit_init");
+  
   if(mod == NULL){
     printf("provide an executable...\n");
     return 1;
@@ -86,10 +102,11 @@ int main(int argc,const char * argv[]){
   awsm_load_thread(mod, "go");
   
   win = gl_window_open(512, 512);
-  gl_window_make_current(win);
-  blit_begin(BLIT_MODE_UNIT);
-  while(awsm_process(mod, 1024)){
-    
+    gl_window_make_current(win);
+    blit_begin(BLIT_MODE_UNIT);
+  while(true){
+
+    if(!awsm_process(mod, 1024)) break;
   }
 	      
   
